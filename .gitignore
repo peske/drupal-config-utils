@@ -1,3 +1,6 @@
 src/.vs/
 src/FD.Drupal.ConfigUtils.NetCore/bin/
 src/FD.Drupal.ConfigUtils.NetCore/obj/
+!src/FD.Drupal.ConfigUtils.Lib
+src/FD.Drupal.ConfigUtils.Lib/bin/
+src/FD.Drupal.ConfigUtils.Lib/obj/
