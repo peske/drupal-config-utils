@@ -2,7 +2,7 @@
   "profiles": {
     "FD.Drupal.ConfigUtils.NetCore": {
       "commandName": "Project",
-      "commandLineArgs": "-s \"C:\\Temp\\sync\" -d \"C:\\Temp\\sync2\" -f node.type.*,views.view.*"
+      "commandLineArgs": "copy -s C:\\Temp\\sync -d C:\\Temp\\sync2"
     }
   }
 }

@@ -19,14 +19,15 @@ namespace FD.Drupal.ConfigUtils
 
         #region Static
 
-        public static bool TryLoadFromFile(FileInfo file, out ConfigurationFile configuration)
+        public static bool TryLoadFromFile(FileInfo file, out ConfigurationFile configuration,
+            Predicate<IConfigNode> validNode = null)
         {
             configuration = null;
 
             try
             {
                 using (ConfigFileReader reader = new ConfigFileReader(file))
-                    configuration = new ConfigurationFile(reader);
+                    configuration = new ConfigurationFile(reader, validNode);
 
                 return true;
             }
@@ -39,6 +40,26 @@ namespace FD.Drupal.ConfigUtils
             return false;
         }
 
+        private static bool DefaultValidNode(IConfigNode node)
+        {
+            switch (node.Name)
+            {
+                case "_core":
+
+                    if (!(node is ConfigurationNode configurationNode) || configurationNode.Children.Count != 1 ||
+                        !string.Equals(configurationNode.Children[0].Name, "default_config_hash",
+                            StringComparison.Ordinal))
+                        "Some file contains '_core' node which doesn't have the expected structure. It will be ignored anyway."
+                            .WriteLineYellow();
+
+                    return false;
+
+                default:
+
+                    return true;
+            }
+        }
+
         #endregion Static
 
         /// <summary>
@@ -47,7 +68,7 @@ namespace FD.Drupal.ConfigUtils
         public FileInfo File { get; }
 
         /// <summary>
-        /// Site UUID.
+        /// UUID.
         /// </summary>
         public Guid? Uuid
         {
@@ -102,10 +123,14 @@ namespace FD.Drupal.ConfigUtils
         /// Constructor used in reading configuration file.
         /// </summary>
         /// <param name="reader">Configuration file reader used.</param>
-        private ConfigurationFile(ConfigFileReader reader) : base(null,
+        /// <param name="validNode">Predicate that determines if a particular node is <em>valid</em>, thus should be added to 
+        /// <see cref="ConfigurationNode.Children"/> collection, or not. If <c>null</c> all the nodes are considered 
+        /// <em>valid</em>. Defaults to a function which returns <c>false</c> for nodes with <see cref="IConfigNode.Name"/>
+        /// <c>"_core"</c>.</param>
+        private ConfigurationFile(ConfigFileReader reader, Predicate<IConfigNode> validNode = null) : base(null,
             reader.File.Name.EndsWith(".yml", StringComparison.OrdinalIgnoreCase)
                 ? reader.File.Name.Substring(0, reader.File.Name.Length - 4)
-                : reader.File.Name, 0, reader)
+                : reader.File.Name, 0, reader, validNode ?? DefaultValidNode)
         {
             if (!reader.EoF)
                 throw new Exception($"Not all lines are loaded from file '{reader.File.Name}'.");

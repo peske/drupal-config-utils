@@ -29,7 +29,8 @@ namespace FD.Drupal.ConfigUtils
             Match match = RxEmptyArrayNode.Match(content);
 
             if (match.Success)
-                return new ConfigurationNode(parent, match.Groups["name"].Value, indentSpaces, reader, true);
+                return new ConfigurationNode(parent, match.Groups["name"].Value, indentSpaces, reader,
+                    isEmptyArray: true);
 
             match = RxSingleValueNode.Match(content);
 
@@ -51,7 +52,7 @@ namespace FD.Drupal.ConfigUtils
         }
 
         private static IEnumerable<IConfigNode> LoadChildren(ConfigurationNode parent, ushort indentSpaces,
-            ConfigFileReader reader)
+            ConfigFileReader reader, Predicate<IConfigNode> validNode)
         {
             if (reader.EoF)
                 yield break;
@@ -75,28 +76,8 @@ namespace FD.Drupal.ConfigUtils
 
                 IConfigNode node = LoadNode(parent, requiredIndent, content, reader);
 
-                if (!IgnoreNode(node, reader.File.Name))
+                if (validNode?.Invoke(node) ?? true)
                     yield return node;
-            }
-        }
-
-        private static bool IgnoreNode(IConfigNode node, string file)
-        {
-            switch (node.Name)
-            {
-                case "_core":
-
-                    if (!(node is ConfigurationNode configurationNode) || configurationNode.Children.Count != 1 ||
-                        !string.Equals(configurationNode.Children[0].Name, "default_config_hash",
-                            StringComparison.Ordinal))
-                        $"'{file}' file contains _core node which doesn't have the expected structure. It will be ignored anyway."
-                            .WriteLineYellow();
-
-                    return true;
-
-                default:
-
-                    return false;
             }
         }
 
@@ -157,10 +138,12 @@ namespace FD.Drupal.ConfigUtils
         /// <param name="name">To be assigned to <see cref="Name"/> property.</param>
         /// <param name="indentSpaces">Number of space characters in left indent.</param>
         /// <param name="reader">Reader used for reading the configuration file.</param>
-        /// <param name="isEmptyArray">Indicates if this instance represents an empty array. Defaults to
-        /// <c>false</c>.</param>
+        /// <param name="validNode">Predicate that determines if a particular node is <em>valid</em>, thus should be added to 
+        /// <see cref="Children"/> collection, or not. If <c>null</c> all the nodes are considered <em>valid</em>. Defaults to 
+        /// <c>null</c>.</param>
+        /// <param name="isEmptyArray">Indicates if this instance represents an empty array. Defaults to <c>false</c>.</param>
         protected ConfigurationNode(ConfigurationNode parent, [NotNull] string name, ushort indentSpaces,
-            ConfigFileReader reader, bool isEmptyArray = false)
+            ConfigFileReader reader, Predicate<IConfigNode> validNode = null, bool isEmptyArray = false)
         {
             Parent = parent;
 
@@ -178,7 +161,7 @@ namespace FD.Drupal.ConfigUtils
             }
             else
             {
-                _children = LoadChildren(this, indentSpaces, reader).ToList();
+                _children = LoadChildren(this, indentSpaces, reader, validNode).ToList();
 
                 if (_children.Any(c => string.Equals(c.Name, "-", StringComparison.Ordinal)))
                 {
