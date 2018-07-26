@@ -1,9 +1,8 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace FD.Drupal.ConfigUtils
 {
-    internal class ConfigOptions
+    internal class CopyOptions
     {
         internal DirectoryInfo Source { get; set; }
 
@@ -13,7 +12,7 @@ namespace FD.Drupal.ConfigUtils
 
         internal string FileNameFilter { get; set; }
 
-        internal Guid? SiteUuid { get; set; }
+        //internal Guid? SiteUuid { get; set; }
 
         internal bool Override { get; set; }
     }

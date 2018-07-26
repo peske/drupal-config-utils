@@ -10,11 +10,11 @@ namespace FD.Drupal.ConfigUtils
     {
         public static int FakeMain(string[] args)
         {
-            bool argsSpecified = args?.Any() ?? false;
+            bool optsSpecified = args?.Length > 1;
 
-            int exitCode = argsSpecified
-                ? Parser.Default.ParseArguments<ArgsOptions>(args).MapResult(Run, ArgsErrors)
-                : Run(null);
+            int exitCode = Parser.Default.ParseArguments<CopyArgsOptions, SubthemeArgsOptions>(args)
+                .MapResult((CopyArgsOptions opts) => Run(optsSpecified ? opts : null),
+                    (SubthemeArgsOptions opts) => Run(optsSpecified ? opts : null), ArgsErrors);
 
             Console.WriteLine();
 
@@ -48,9 +48,9 @@ namespace FD.Drupal.ConfigUtils
             return otherErrors.Any() ? (int) ExitCode.InvalidArguments : (int) ExitCode.Success;
         }
 
-        private static int Run(ArgsOptions options)
+        private static int Run(CopyArgsOptions options)
         {
-            ExitCode code = LoadConfig(options, out ConfigOptions config);
+            ExitCode code = LoadConfig(options, out CopyOptions config);
 
             if (code != ExitCode.Success)
                 return (int) code;
@@ -227,9 +227,14 @@ namespace FD.Drupal.ConfigUtils
             return (int) ExitCode.Success;
         }
 
-        private static ExitCode LoadConfig(ArgsOptions options, out ConfigOptions config)
+        private static int Run(SubthemeArgsOptions options)
         {
-            config = new ConfigOptions();
+            return 1;
+        }
+
+        private static ExitCode LoadConfig(CopyArgsOptions options, out CopyOptions config)
+        {
+            config = new CopyOptions();
 
             string directory = options?.SourceDirectory;
 
@@ -262,21 +267,21 @@ namespace FD.Drupal.ConfigUtils
             config.Override = options?.Override ??
                               AskYesNo("Should files from the destination directory be overridden?");
 
-            if (options == null)
-                config.SiteUuid =
-                    AskForSiteUuid(
-                        "Enter a backup site UUID that will be used if the UUID cannot be inferred, or just empty line if it isn't needed:");
-            else if (!string.IsNullOrEmpty(options.SiteUuid))
-            {
-                if (Guid.TryParse(options.SiteUuid, out Guid uuid))
-                    config.SiteUuid = uuid;
-                else
-                {
-                    $"Value '{options.SiteUuid}' doesn't have a valid UUID format.".WriteLineRed();
+            //if (options == null)
+            //    config.SiteUuid =
+            //        AskForSiteUuid(
+            //            "Enter a backup site UUID that will be used if the UUID cannot be inferred, or just empty line if it isn't needed:");
+            //else if (!string.IsNullOrEmpty(options.SiteUuid))
+            //{
+            //    if (Guid.TryParse(options.SiteUuid, out Guid uuid))
+            //        config.SiteUuid = uuid;
+            //    else
+            //    {
+            //        $"Value '{options.SiteUuid}' doesn't have a valid UUID format.".WriteLineRed();
 
-                    return ExitCode.InvalidArguments;
-                }
-            }
+            //        return ExitCode.InvalidArguments;
+            //    }
+            //}
 
             return ExitCode.Success;
         }

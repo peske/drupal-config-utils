@@ -1,8 +1,10 @@
 ﻿using CommandLine;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace FD.Drupal.ConfigUtils
 {
-    public class ArgsOptions
+    [Verb("copy", HelpText = "Copies configuration files from one directory (site) to another.")]
+    public class CopyArgsOptions
     {
         #region Option constants
 
@@ -34,9 +36,9 @@ namespace FD.Drupal.ConfigUtils
         internal const string FileNameFilterHelpText =
             "File name filter. Can contain a single file name, or comma-separated list of file names. File name can contain '*' wildcard (i.e. 'node.type.*').";
 
-        private const char SiteUuidOptionShort = 'u';
+        //private const char SiteUuidOptionShort = 'u';
 
-        private const string SiteUuidOptionLong = "dest-uuid";
+        //private const string SiteUuidOptionLong = "dest-uuid";
 
         internal const string SiteUuidHelpText =
             "Target site UUID. Specified value will be used ONLY if the actual value cannot be inferred from the content of the destination directory. If not specified, and the value cannot be inferred, files will be copied without 'uuid'.";
@@ -84,13 +86,13 @@ namespace FD.Drupal.ConfigUtils
             HelpText = FileNameFilterHelpText)]
         public string FileNameFilter { get; set; }
 
-        /// <summary>
-        /// Site UUID of the target site, specified through a CLI argument.
-        /// </summary>
-        [Option(SiteUuidOptionShort, SiteUuidOptionLong,
-            Required = false,
-            HelpText = SiteUuidHelpText)]
-        public string SiteUuid { get; set; }
+        ///// <summary>
+        ///// Site UUID of the target site, specified through a CLI argument.
+        ///// </summary>
+        //[Option(SiteUuidOptionShort, SiteUuidOptionLong,
+        //    Required = false,
+        //    HelpText = SiteUuidHelpText)]
+        //public string SiteUuid { get; set; }
 
         /// <summary>
         /// Site UUID of the target site, specified through a CLI argument.
