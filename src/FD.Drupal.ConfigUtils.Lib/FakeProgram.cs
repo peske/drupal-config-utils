@@ -22,14 +22,13 @@ namespace FD.Drupal.ConfigUtils
             else
                 $"Execution failed with exit code {(ExitCode) exitCode}.".WriteLineRed();
 
-            //if (!argsSpecified)
-            {
-                Console.WriteLine();
+#if DEBUG
+            Console.WriteLine();
 
-                "Press [Enter] to exit.".WriteLine();
+            "Press [Enter] to exit.".WriteLine();
 
-                Console.ReadLine();
-            }
+            Console.ReadLine();
+#endif
 
             return exitCode;
         }
