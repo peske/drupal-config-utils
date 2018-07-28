@@ -4,3 +4,6 @@ src/FD.Drupal.ConfigUtils.NetCore/obj/
 !src/FD.Drupal.ConfigUtils.Lib
 src/FD.Drupal.ConfigUtils.Lib/bin/
 src/FD.Drupal.ConfigUtils.Lib/obj/
+src/FD.Drupal.ConfigUtils.NetFull/bin/
+src/FD.Drupal.ConfigUtils.NetFull/obj/
+src/publish/
