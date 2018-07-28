@@ -53,9 +53,13 @@ namespace FD.Drupal.ConfigUtils
                     continue;
                 }
 
-                string newDir = Path.Combine(subthemeConfigDir,
-                    // ReSharper disable once PossibleNullReferenceException
-                    themeFile.File.Directory.FullName.Substring(themeConfigDirLength));
+                // ReSharper disable once PossibleNullReferenceException
+                string pathWithin = themeFile.File.Directory.FullName.Substring(themeConfigDirLength);
+
+                if (pathWithin.StartsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
+                    pathWithin = pathWithin.Length > 1 ? pathWithin.Substring(1) : string.Empty;
+
+                string newDir = Path.Combine(subthemeConfigDir, pathWithin);
 
                 if (!Directory.Exists(newDir))
                 {
@@ -72,7 +76,7 @@ namespace FD.Drupal.ConfigUtils
                     }
                 }
 
-                FileInfo destFile = new FileInfo(Path.Combine(newDir, themeFile.Name, ".yml"));
+                FileInfo destFile = new FileInfo(Path.Combine(newDir, string.Concat(themeFile.Name, ".yml")));
 
                 if (destFile.Exists)
                 {
@@ -105,8 +109,8 @@ namespace FD.Drupal.ConfigUtils
             string directory = options?.ThemePath;
 
             config.Theme = string.IsNullOrEmpty(directory)
-                ? InputHelpers.AskForExistingDirectory("Enter the full path of the base theme:")
-                : InputHelpers.ExistingDirectory(directory);
+                ? InputHelpers.AskForDirectory("Enter the full path of the base theme:")
+                : InputHelpers.GetDirectory(directory);
 
             if (config.Theme == null)
                 return ExitCode.InvalidSourceDirectory;
@@ -114,8 +118,11 @@ namespace FD.Drupal.ConfigUtils
             directory = options?.SubthemePath;
 
             config.Subtheme = string.IsNullOrEmpty(directory)
-                ? InputHelpers.AskForExistingDirectory("Enter the full path of the subtheme:")
-                : InputHelpers.ExistingDirectory(directory);
+                ? InputHelpers.AskForDirectory("Enter the full path of the subtheme:", false)
+                : InputHelpers.GetDirectory(directory, false);
+
+            if (config.Subtheme == null)
+                return ExitCode.InvalidDestinationDirectory;
 
             if (string.Equals(config.Theme.FullName, config.Subtheme.FullName, StringComparison.OrdinalIgnoreCase))
             {
@@ -125,9 +132,6 @@ namespace FD.Drupal.ConfigUtils
 
                 return ExitCode.InvalidDestinationDirectory;
             }
-
-            if (config.Theme == null)
-                return ExitCode.InvalidSourceDirectory;
 
             return ExitCode.Success;
         }

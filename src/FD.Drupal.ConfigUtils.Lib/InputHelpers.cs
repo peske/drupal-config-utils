@@ -56,14 +56,14 @@ namespace FD.Drupal.ConfigUtils
             }
         }
 
-        internal static DirectoryInfo AskForExistingDirectory(string question)
+        internal static DirectoryInfo AskForDirectory(string question, bool onlyExisting = true)
         {
-            string directory = Prompt(question, answer => ExistingDirectory(answer) != null);
+            string directory = Prompt(question, answer => GetDirectory(answer, onlyExisting) != null);
 
             return new DirectoryInfo(directory);
         }
 
-        internal static DirectoryInfo ExistingDirectory(string directory)
+        internal static DirectoryInfo GetDirectory(string directory, bool onlyExisting = true)
         {
             DirectoryInfo dir;
 
@@ -77,6 +77,9 @@ namespace FD.Drupal.ConfigUtils
 
                 return null;
             }
+
+            if (!onlyExisting)
+                return dir;
 
             if (dir.Exists)
                 return dir;

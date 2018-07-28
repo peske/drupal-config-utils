@@ -11,7 +11,8 @@ namespace FD.Drupal.ConfigUtils
 
         private static readonly Regex RxNonSpaceChar = new Regex(@"\S", RegexOptions.Compiled);
 
-        private static bool IgnoreLine(string line) => string.IsNullOrWhiteSpace(line);
+        private static bool IgnoreLine(string line) =>
+            string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#", StringComparison.Ordinal);
 
         #endregion Static
 

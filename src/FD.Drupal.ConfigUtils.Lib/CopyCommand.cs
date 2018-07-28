@@ -193,8 +193,8 @@ namespace FD.Drupal.ConfigUtils
             string directory = options?.SourceDirectory;
 
             config.Source = string.IsNullOrEmpty(directory)
-                ? InputHelpers.AskForExistingDirectory("Enter the full path of the source directory:")
-                : InputHelpers.ExistingDirectory(directory);
+                ? InputHelpers.AskForDirectory("Enter the full path of the source directory:")
+                : InputHelpers.GetDirectory(directory);
 
             if (config.Source == null)
                 return ExitCode.InvalidSourceDirectory;
@@ -202,8 +202,8 @@ namespace FD.Drupal.ConfigUtils
             directory = options?.DestDirectory;
 
             config.Dest = string.IsNullOrEmpty(directory)
-                ? InputHelpers.AskForExistingDirectory("Enter the full path of the destination directory:")
-                : InputHelpers.ExistingDirectory(directory);
+                ? InputHelpers.AskForDirectory("Enter the full path of the destination directory:")
+                : InputHelpers.GetDirectory(directory);
 
             if (config.Dest == null)
                 return ExitCode.InvalidDestinationDirectory;

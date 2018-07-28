@@ -202,6 +202,22 @@ namespace FD.Drupal.ConfigUtils
 
             bool replaced = false;
 
+            string name = node.Name;
+
+            if (!string.IsNullOrEmpty(name))
+            {
+                name = name.Replace(pattern, replacement);
+
+                if (!string.Equals(name, node.Name, StringComparison.Ordinal))
+                {
+                    $"{node.GetPathName()} - Node name will be changed to: {name}".WriteLineYellow();
+
+                    node.ChangeName(name);
+
+                    replaced = true;
+                }
+            }
+
             switch (node)
             {
                 case ConfigurationNode configNode:
@@ -229,22 +245,6 @@ namespace FD.Drupal.ConfigUtils
                     }
 
                     break;
-            }
-
-            string name = node.Name;
-
-            if (!string.IsNullOrEmpty(name))
-            {
-                name = name.Replace(pattern, replacement);
-
-                if (!string.Equals(name, node.Name, StringComparison.Ordinal))
-                {
-                    $"{node.GetPathName()} - Node name will be changed to: {name}".WriteLineYellow();
-
-                    node.ChangeName(name);
-
-                    replaced = true;
-                }
             }
 
             return replaced;

@@ -2,7 +2,7 @@
   "profiles": {
     "FD.Drupal.ConfigUtils.NetCore": {
       "commandName": "Project",
-      "commandLineArgs": "copy -s C:\\Temp\\sync -d C:\\Temp\\sync2"
+      "commandLineArgs": "subtheme -t \"C:\\Users\\peske\\Downloads\\levelplus-pro_5.8.1\\levelplus\\d8\\simple_theme_installation\\theme\\levelplus\" -s \"C:\\Temp\\levelplussubtheme\""
     }
   }
 }
