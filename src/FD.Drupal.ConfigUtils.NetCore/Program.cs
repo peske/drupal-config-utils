@@ -2,9 +2,6 @@
 {
     class Program
     {
-        static void Main(string[] args)
-        {
-            FakeProgram.FakeMain(args);
-        }
+        static int Main(string[] args) => FakeProgram.FakeMain(args);
     }
 }

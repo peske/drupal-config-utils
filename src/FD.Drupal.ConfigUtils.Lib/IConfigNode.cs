@@ -56,5 +56,15 @@ namespace FD.Drupal.ConfigUtils
         /// </summary>
         /// <param name="writer">Writer to write to.</param>
         void Write(StreamWriter writer);
+
+        /// <summary>
+        /// Sets a new value to <see cref="Name"/> property.
+        /// </summary>
+        /// <param name="newName">Value to set to <see cref="Name"/> property.</param>
+        /// <exception cref="System.ArgumentNullException">If <paramref name="newName"/> is <c>null</c> or
+        /// empty.</exception>
+        /// <exception cref="System.InvalidOperationException">If the old name is <c>"-"</c> (meaning that 
+        /// this instance is an array item.</exception>
+        void ChangeName([NotNull] string newName);
     }
 }

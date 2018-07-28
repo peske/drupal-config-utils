@@ -90,7 +90,7 @@ namespace FD.Drupal.ConfigUtils
         public ushort IndentLevel { get; }
 
         /// <inheritdoc />
-        public string Name { get; }
+        public string Name { get; private set; }
 
         // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
         private readonly List<IConfigNode> _children;
@@ -271,6 +271,21 @@ namespace FD.Drupal.ConfigUtils
 
             foreach (IConfigNode child in Children)
                 child.Write(writer);
+        }
+
+        /// <inheritdoc />
+        public void ChangeName(string newName)
+        {
+            // ReSharper disable once ConstantConditionalAccessQualifier
+            newName = newName?.Trim();
+
+            if (string.IsNullOrEmpty(newName))
+                throw new ArgumentNullException($"{nameof(newName)} is null or empty.", nameof(newName));
+
+            if (string.Equals(Name, "-", StringComparison.Ordinal))
+                throw new InvalidOperationException("If the name is '-', it cannot be changed.");
+
+            Name = newName;
         }
     }
 }
